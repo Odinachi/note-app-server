@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
 import 'package:note_app_server/auth/auth_router.dart';
+import 'package:note_app_server/note/note_router.dart';
 import 'package:note_app_server/server_files/server_strings.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
@@ -12,15 +13,10 @@ import 'package:supabase/supabase.dart';
 final _router = Router()
   ..get('/', _rootHandler)
   ..mount('/auth', AuthRouter.authRoute)
-  ..mount('/note', _echoHandler);
+  ..mount('/note', NoteRouter.noteRoute);
 
 Response _rootHandler(Request req) {
   return Response.ok('Demo Note App Server\n');
-}
-
-Response _echoHandler(Request request) {
-  final message = request.params['message'];
-  return Response.ok('$message\n');
 }
 
 void main() async {
