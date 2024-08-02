@@ -8,7 +8,6 @@ import '../../server_files/server_strings.dart';
 
 Handler profileHandler() => (Request req) async {
       if (req.params['id'] == null) {
-        print("Kkk 2");
         return Response.badRequest(
             body: response(message: ServerStrings.invalidId),
             headers: baseHeader);
@@ -16,9 +15,6 @@ Handler profileHandler() => (Request req) async {
       final supabase = BaseAppRouter().supaBase;
 
       try {
-        // final res = await supabase.auth.getUser(
-        //   req.context['authDetails'] as String?,
-        // );
         final data = await supabase.rest
             .setAuth(req.context['authDetails'] as String)
             .from("Users")

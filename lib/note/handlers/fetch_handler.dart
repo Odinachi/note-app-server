@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shelf/shelf.dart';
 import 'package:supabase/supabase.dart';
 
@@ -8,7 +7,7 @@ import '../../router.dart';
 import '../../server_files/globals.dart';
 import '../../server_files/server_strings.dart';
 
-Handler createNoteHandler() => (Request req) async {
+Handler fetchNoteHandler() => (Request req) async {
       Map<String, dynamic> value;
 
       try {
@@ -18,31 +17,17 @@ Handler createNoteHandler() => (Request req) async {
             body: response(message: ServerStrings.invalidNote),
             headers: baseHeader);
       }
-      if (value['title'] is! String || value['title'] == null) {
-        return Response.badRequest(
-            body: response(message: ServerStrings.invalidNote),
-            headers: baseHeader);
-      }
-
-      Map<String, dynamic> decodedToken =
-          JwtDecoder.decode((req.context['authDetails'] ?? "") as String);
-
       final supabase = BaseAppRouter().supaBase;
 
       try {
         final res = await supabase.rest
             .setAuth(req.context['authDetails'] as String)
             .from("Notes")
-            .insert({
-          "title": value['title'],
-          "content": value['content'],
-          "user_id": decodedToken['sub']
-        }).select();
+            .select()
+            .eq('user_id', value['user_id'] ?? "");
 
         return Response.ok(
-          response(
-              message: ServerStrings.noteCreatedSuccessful,
-              data: res.firstOrNull),
+          response(message: ServerStrings.noteCreatedSuccessful, data: res),
           headers: baseHeader,
         );
       } catch (e) {
@@ -54,7 +39,7 @@ Handler createNoteHandler() => (Request req) async {
         }
         if (e is PostgrestException) {
           error = e.message;
-          code = int.tryParse(e.code ?? "404") ?? 404;
+          code = int.parse(e.code ?? "404");
         }
         return Response(code,
             body: response(message: error), headers: baseHeader);

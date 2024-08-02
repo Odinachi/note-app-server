@@ -12,6 +12,7 @@ dependencies:
   shelf: ^1.4.0
   shelf_router: ^1.1.0
   supabase: ^2.2.7
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   http: ^1.1.0
