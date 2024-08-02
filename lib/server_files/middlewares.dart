@@ -16,8 +16,10 @@ Middleware handleAuth() => (Handler innerHandler) => (Request request) async {
 
 Middleware checkAuthorization() => createMiddleware(
       requestHandler: (Request request) {
-        if (request.url.path.isNotEmpty &&
-            request.context['authDetails'] == null &&
+        if (request.url.path.isEmpty || request.url.path == "/") {
+          return null;
+        }
+        if (request.context['authDetails'] == null &&
             ((!request.url.path.contains("login") &&
                 !request.url.path.contains("register")))) {
           return Response.unauthorized(
