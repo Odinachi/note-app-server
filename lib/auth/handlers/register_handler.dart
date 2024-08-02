@@ -40,16 +40,23 @@ Handler registerHandler() => (Request req) async {
       }
       final supabase = BaseAppRouter().supaBase;
       try {
-        final res = await supabase.auth.signUp(
-            password: value["password"],
-            email: value["email"],
-            data: {"name": value["name"]});
+        final res = await supabase.auth
+            .signUp(password: value["password"], email: value["email"]);
+        final details = {
+          "name": value["name"],
+          "email": value["email"],
+          "user_id": res.session?.user.id
+        };
+        await supabase.rest
+            .setAuth(res.session?.accessToken)
+            .from("Users")
+            .insert(details);
 
         return Response.ok(
             response(message: ServerStrings.registerSuccessful, data: {
               "refresh_token": res.session?.refreshToken,
               "access_token": res.session?.accessToken,
-              "user": {"name": value["name"], "email": value["email"]}
+              "user": details
             }),
             headers: baseHeader);
       } catch (e) {
@@ -59,6 +66,8 @@ Handler registerHandler() => (Request req) async {
           error = e.message;
           code = int.parse(e.statusCode ?? "404");
         }
+        print("kkkkk error is $e");
+
         return Response(code,
             body: response(message: error), headers: baseHeader);
       }

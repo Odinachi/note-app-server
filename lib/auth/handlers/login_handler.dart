@@ -40,15 +40,16 @@ Handler loginHandler() => (Request req) async {
           password: value["password"],
           email: value["email"],
         );
-
+        final data = await supabase.rest
+            .setAuth(res.session?.accessToken)
+            .from("Users")
+            .select('name, user_id, email')
+            .eq('user_id', res.user?.id ?? "");
         return Response.ok(
-            response(message: ServerStrings.registerSuccessful, data: {
+            response(message: ServerStrings.loginSuccessful, data: {
               "refresh_token": res.session?.refreshToken,
               "access_token": res.session?.accessToken,
-              "user": {
-                "name": res.session?.user.userMetadata?["name"],
-                "email": value["email"]
-              }
+              "user": data
             }),
             headers: baseHeader);
       } catch (e) {
