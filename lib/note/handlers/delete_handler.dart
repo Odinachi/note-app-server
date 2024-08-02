@@ -7,7 +7,8 @@ import '../../server_files/globals.dart';
 import '../../server_files/server_strings.dart';
 
 Handler deleteNoteHandler() => (Request req) async {
-      if (req.params['id'] == null) {
+      final id = int.tryParse(req.params['id'] ?? "");
+      if (req.params['id'] == null && id != null) {
         return Response.badRequest(
             body: response(message: ServerStrings.invalidId),
             headers: baseHeader);
@@ -19,7 +20,7 @@ Handler deleteNoteHandler() => (Request req) async {
             .setAuth(req.context['authDetails'] as String)
             .from("Notes")
             .delete()
-            .eq('user_id', req.params['id'] ?? "");
+            .eq('id', id!);
 
         return Response.ok(
             response(

@@ -7,14 +7,20 @@ import '../../server_files/globals.dart';
 import '../../server_files/server_strings.dart';
 
 Handler getNoteHandler() => (Request req) async {
+      final id = int.tryParse(req.params['id'] ?? "");
       final supabase = BaseAppRouter().supaBase;
+      if (req.params['id'] == null && id != null) {
+        return Response.badRequest(
+            body: response(message: ServerStrings.invalidId),
+            headers: baseHeader);
+      }
 
       try {
         final res = await supabase.rest
             .setAuth(req.context['authDetails'] as String)
             .from("Notes")
             .select()
-            .eq('id', req.params['id'] ?? "");
+            .eq('id', id!);
 
         return Response.ok(
           response(

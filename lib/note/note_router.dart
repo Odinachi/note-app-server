@@ -10,11 +10,11 @@ import 'handlers/get_handler.dart';
 class NoteRouter {
   static Handler get noteRoute {
     final auth = Router()
-      ..post("/</|.*>", createNoteHandler())
-      ..get("/</|.*>", getNoteHandler())
-      ..get("/fetch</|.*>", fetchNoteHandler())
-      ..patch("/<id>", updateNoteHandler())
-      ..delete("/<id>", deleteNoteHandler());
+      ..post("/create", createNoteHandler())
+      ..get("/<id|[0-9]+>", getNoteHandler())
+      ..get("/fetch", fetchNoteHandler())
+      ..patch("/<id|[0-9]+>", updateNoteHandler())
+      ..delete("/<id|[0-9]+>", deleteNoteHandler());
 
     return auth;
   }
