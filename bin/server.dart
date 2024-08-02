@@ -11,7 +11,7 @@ void main() async {
       .addMiddleware(handleCors())
       .addMiddleware(logRequests())
       .addMiddleware(handleAuth())
-      .addMiddleware((checkAuthorization()))
+      .addMiddleware(checkAuthorization())
       .addHandler(BaseAppRouter().router..get('/', _rootHandler));
 
   final server = await serve(handler, InternetAddress.anyIPv4,
