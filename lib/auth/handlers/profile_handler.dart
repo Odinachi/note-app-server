@@ -1,5 +1,5 @@
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shelf/shelf.dart';
-import 'package:shelf_router/shelf_router.dart';
 import 'package:supabase/supabase.dart';
 
 import '../../router.dart';
@@ -7,11 +7,8 @@ import '../../server_files/globals.dart';
 import '../../server_files/server_strings.dart';
 
 Handler profileHandler() => (Request req) async {
-      if (req.params['id'] == null) {
-        return Response.badRequest(
-            body: response(message: ServerStrings.invalidId),
-            headers: baseHeader);
-      }
+      Map<String, dynamic> decodedToken =
+          JwtDecoder.decode((req.context['authDetails'] ?? "") as String);
       final supabase = BaseAppRouter().supaBase;
 
       try {
@@ -19,7 +16,7 @@ Handler profileHandler() => (Request req) async {
             .setAuth(req.context['authDetails'] as String)
             .from("Users")
             .select('name, user_id, email')
-            .eq('user_id', req.params['id'] ?? "");
+            .eq('user_id', decodedToken['sub']);
         if (data.isNotEmpty) {
           return Response.ok(
               response(

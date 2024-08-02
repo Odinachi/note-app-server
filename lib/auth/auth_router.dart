@@ -10,7 +10,7 @@ class AuthRouter {
     final auth = Router()
       ..post("/login</|.*>", loginHandler())
       ..post("/register</|.*>", registerHandler())
-      ..get("/profile/<id>", profileHandler());
+      ..get("/profile", profileHandler());
 
     return auth;
   }
